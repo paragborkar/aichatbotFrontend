@@ -1,15 +1,26 @@
 import {Box, Typography, Button} from "@mui/material";
 import CustomizedInput from "../components/shared/CustomizedInput";
 import {IoIosLogIn} from 'react-icons/io'
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast/headless";
+
+
 
 const Login = () => {
-
-    const handleSubmit = (e:React.FormEvent<HTMLFormElement>) =>{
+    const auth = useAuth();
+    const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
         const formData= new FormData(e.currentTarget);
-        const email = formData.get("email");
-        const password = formData.get("password");
-        console.log(email,password);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        try{
+            toast.loading("Signing In", {id:"login"});
+            await auth?.login(email,password);
+            toast.success("Login Successful",{id:"login"});
+        }catch(error){
+            console.log(error);
+            toast.error("Signed In Failed", {id:"login"});
+        }
     }
 
   return (
@@ -32,7 +43,7 @@ const Login = () => {
                         Login
                     </Typography>
                     <CustomizedInput type="email" name="email" label="Email" />
-                    <CustomizedInput type="password" name="password" label="password" />
+                    <CustomizedInput type="password" name="password" label="Password" />
                     <Button type="submit" sx={{px:2, py:1, mt:2, width: "400px", borderRadius:2, bgcolor:"#00fffc" ,":hove":{bgcolor:"white", color:"black"}}} endIcon={<IoIosLogIn/>}>Login</Button>
                 </Box>
             </form>
